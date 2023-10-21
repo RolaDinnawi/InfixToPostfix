@@ -1,0 +1,70 @@
+import java.util.*;
+public class InfixToPostfix {
+    public static void main(String[] args) {
+        String infix = "a+b*(c^d-e)^(f+g*h)-i";
+        String postfix = infixToPostfix(infix);
+        System.out.println(postfix);
+    }
+    // method to check if a character is an operator
+    public static boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+    }
+    // method to check the precedence of an operator
+    public static int precedence(char c) {
+         
+            if(c == '^')
+                return 3;
+            else if ( c== '*' || c == '/')
+                return 2;
+            else if (c == '+' || c == '-')
+                return 1;
+            return 0;
+    }
+    // method to convert infix expression to postfix expression
+    public static String infixToPostfix(String infix) {
+        Stack<Character> stack = new Stack<Character>();
+        String postfix = "";
+
+        for (int i = 0; i < infix.length(); i++) {
+            char c = infix.charAt(i);
+
+            // if scanned character is an operand, append it to the postfix string
+            if (Character.isLetterOrDigit(c)) {
+                postfix += c;
+            }
+            // if scanned character is an operator
+            else if (isOperator(c)) {
+                while (!stack.empty() && stack.peek() != '(' && precedence(c) <= precedence(stack.peek())) {
+                    postfix += stack.pop();
+                }
+                stack.push(c);
+            }
+            // If scanned character is a left parenthesis, push it onto the stack
+            else if (c == '(') {
+                stack.push(c);
+            }
+            // If scanned character is a right parenthesis, pop and append all operators until the matching left parenthesis is found
+            else if (c == ')') {
+                while (!stack.empty() && stack.peek() != '(') {
+                    postfix += stack.pop();
+                }
+                if (!stack.empty() && stack.peek() == '(') {
+                    stack.pop();
+                }
+            }
+        }
+
+        // Pop and append all remaining operators from the stack
+        while (!stack.empty()) {
+            if (stack.peek() == '(' || stack.peek() == ')') {
+                stack.pop();
+            } else {
+                postfix += stack.pop();
+            }
+        }
+
+        return postfix;
+    }
+}
+
+
